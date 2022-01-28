@@ -12,6 +12,7 @@ const canvas = document.querySelector('canvas.webgl')
 
 // Scene
 const scene = new THREE.Scene()
+scene.background = new THREE.Color('black')
 
 /*
 // Objects
@@ -54,11 +55,35 @@ loader.load(
 );
 // Lights
 
-const pointLight = new THREE.PointLight(0xffffff, 0.1)
-pointLight.position.x = 2
-pointLight.position.y = 3
-pointLight.position.z = 4
-scene.add(pointLight)
+const lamp = new THREE.PointLight(0xfff8a8, 0.8)
+lamp.position.x = -1.1
+lamp.position.y = 3.65
+lamp.position.z = -4.5
+scene.add(lamp)
+
+const lampFolder = gui.addFolder('Lamp')
+
+lampFolder.add(lamp.position,'y').min(-5).max(5).step(0.01)
+lampFolder.add(lamp.position,'x').min(-5).max(5).step(0.01)
+lampFolder.add(lamp.position,'z').min(-5).max(5).step(0.01)
+
+const pointLightHelper = new THREE.PointLightHelper(lamp, .1)
+//scene.add(pointLightHelper)
+
+const mainLight = new THREE.AmbientLight(0xffffff, 0.3)
+mainLight.position.x = 0
+mainLight.position.y = 7
+mainLight.position.z = 0
+scene.add(mainLight)
+
+const lightFolder = gui.addFolder('Light')
+
+lightFolder.add(mainLight.position,'y').min(-10).max(10).step(0.01)
+lightFolder.add(mainLight.position,'x').min(-10).max(10).step(0.01)
+lightFolder.add(mainLight.position,'z').min(-10).max(10).step(0.01)
+
+const mainLightHelper = new THREE.PointLightHelper(mainLight, 1)
+//scene.add(mainLightHelper)
 
 /**
  * Sizes
@@ -88,9 +113,10 @@ window.addEventListener('resize', () =>
  */
 // Base camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-camera.position.x = 0
-camera.position.y = 0
-camera.position.z = 2
+camera.position.x = 1.2
+camera.position.y = 2.3
+camera.position.z = 4.7
+camera.zoom = 10
 scene.add(camera)
 
 gui.add(camera.position, 'x').min(-10).max(10).step(0.01);
@@ -98,8 +124,9 @@ gui.add(camera.position, 'y').min(-10).max(10).step(0.01);
 gui.add(camera.position, 'z').min(-10).max(10).step(0.01);
 
 // Controls
-// const controls = new OrbitControls(camera, canvas)
-// controls.enableDamping = true
+
+const controls = new OrbitControls(camera, canvas)
+controls.enableDamping = true
 
 /**
  * Renderer
@@ -123,7 +150,7 @@ const tick = () =>
     const elapsedTime = clock.getElapsedTime()
 
     // Update Orbital Controls
-    // controls.update()
+    controls.update()
 
     // Render
     renderer.render(scene, camera)
