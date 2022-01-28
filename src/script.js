@@ -142,17 +142,30 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
  * Animate
  */
 
+
 var audio = new Audio('You\'ve Got a Friend in Me.mp3');
+
+
 
 window.addEventListener('load', () =>
 {
+    if (typeof audio.loop == 'boolean')
+    {
+        audio.loop = true;
+    }
+    else
+    {
+        audio.addEventListener('ended', function() {
+            this.currentTime = 0;
+            this.play();
+        }, false);
+    }
     audio.play();
 })
 const clock = new THREE.Clock()
 
 const tick = () =>
 {
-
 
 
     const elapsedTime = clock.getElapsedTime()
