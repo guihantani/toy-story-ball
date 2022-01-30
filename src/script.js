@@ -14,10 +14,24 @@ const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
 scene.background = new THREE.Color('black')
 
-/*
-// Objects
-const geometry = new THREE.TorusGeometry( .7, .2, 16, 100 );
 
+// Objects
+
+
+
+function addSphere(scene) {
+  let geometry = new THREE.SphereGeometry( 0.3, 32, 32 );
+  let material = new THREE.MeshStandardMaterial({color: 0x0000ff, roughness: 0});
+  let sphere = new THREE.Mesh( geometry, material );
+  sphere.position.set(0.8, 3, -4.0);
+  sphere.name = 'my-sphere';
+  sphere.castShadow = true;
+  //sphere.receiveShadow = true;
+
+  scene.add( sphere );
+}
+addSphere(scene);
+/*
 // Materials
 
 const material = new THREE.MeshBasicMaterial()
@@ -160,6 +174,34 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
  * Animate
  */
 
+// setting initial values for required parameters
+let acceleration = 1;
+let bounce_distance = 0.5;
+let bottom_position_y = 3;
+let time_step = 0.03;
+// time_counter is calculated to be the time the ball just reached the top position
+// this is simply calculated with the s = (1/2)gt*t formula, which is the case when ball is dropped from the top position
+let time_counter = Math.sqrt(bounce_distance * 2 / acceleration);
+let initial_speed = acceleration * time_counter;
+let sphere = scene.getObjectByName("my-sphere");
+// Animate the scene
+const animate = () => {
+    requestAnimationFrame( animate );
+    // reset time_counter back to the start of the bouncing sequence when sphere hits through the bottom position
+    if (sphere.position.y < bottom_position_y) {
+        time_counter = 0;
+    }
+    // calculate sphere position with the s2 = s1 + ut + (1/2)gt*t formula
+    // this formula assumes the ball to be bouncing off from the bottom position when time_counter is zero
+    sphere.position.y = bottom_position_y + initial_speed * time_counter - 0.5 * acceleration * time_counter * time_counter;
+    // advance time
+    time_counter += time_step;
+    renderer.render( scene, camera );
+};
+
+animate();
+
+
 
 var audio = new Audio('You\'ve Got a Friend in Me.mp3');
 
@@ -182,6 +224,7 @@ window.addEventListener('load', () =>
 })
 const clock = new THREE.Clock()
 
+
 const tick = () =>
 {
 
@@ -192,7 +235,8 @@ const tick = () =>
     controls.update()
 
     // Render
-    renderer.render(scene, camera)
+    //renderer.render(scene, camera)
+
 
     // Call tick again on the next frame
     window.requestAnimationFrame(tick)
