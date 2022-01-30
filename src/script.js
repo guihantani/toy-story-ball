@@ -23,7 +23,7 @@ function addSphere(scene) {
   let geometry = new THREE.SphereGeometry( 0.3, 32, 32 );
   let material = new THREE.MeshStandardMaterial({color: 0x0000ff, roughness: 0});
   let sphere = new THREE.Mesh( geometry, material );
-  sphere.position.set(0.8, 3, -4.0);
+  sphere.position.set(-0.2, 3, -4.0);
   sphere.name = 'my-sphere';
   sphere.castShadow = true;
   //sphere.receiveShadow = true;
@@ -49,18 +49,19 @@ loader.load(
     // called when the resource is loaded
     function ( gltf ) {
         const root = gltf.scene;
-        root.traverse(function(root) {
-            if(root.isMesh){
-                root.castShadow = true;
-                root.receiveShadow = true;
+        root.traverse(function(model) {
+            console.log(model.name)
+            if(model.isMesh){
+                model.castShadow = true;
+                model.receiveShadow = true;
             }
+            if(model.name==='Luxo_BallpSphere1'){
+                model.visible=false
+            }
+
         })
-
         root.position.set(0,0,0);
-
-        scene.add( root );
-
-
+        scene.add( root )
     },
     // called while loading is progressing
     function ( xhr ) {
