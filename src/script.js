@@ -35,7 +35,15 @@ loader.load(
     // called when the resource is loaded
     function ( gltf ) {
         const root = gltf.scene;
+        root.traverse(function(root) {
+            if(root.isMesh){
+                root.castShadow = true;
+                root.receiveShadow = true;
+            }
+        })
+
         root.position.set(0,0,0);
+
         scene.add( root );
 
 
@@ -59,6 +67,10 @@ const lamp = new THREE.PointLight(0xfff8a8, 0.8)
 lamp.position.x = -1.1
 lamp.position.y = 3.65
 lamp.position.z = -4.5
+
+lamp.castShadow = true
+lamp.shadow.bias = -0.0004
+
 scene.add(lamp)
 
 const lampFolder = gui.addFolder('Lamp')
@@ -70,10 +82,14 @@ lampFolder.add(lamp.position,'z').min(-5).max(5).step(0.01)
 const pointLightHelper = new THREE.PointLightHelper(lamp, .1)
 //scene.add(pointLightHelper)
 
-const mainLight = new THREE.AmbientLight(0xffffff, 0.3)
+const mainLight = new THREE.PointLight(0xffffff, 0.3)
 mainLight.position.x = 0
 mainLight.position.y = 7
 mainLight.position.z = 0
+
+mainLight.castShadow = true
+mainLight.shadow.bias = -0.0004
+
 scene.add(mainLight)
 
 const lightFolder = gui.addFolder('Light')
@@ -137,6 +153,8 @@ const renderer = new THREE.WebGLRenderer({
 })
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 /**
  * Animate
@@ -144,7 +162,6 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
 
 var audio = new Audio('You\'ve Got a Friend in Me.mp3');
-
 
 
 window.addEventListener('load', () =>
@@ -160,6 +177,7 @@ window.addEventListener('load', () =>
             this.play();
         }, false);
     }
+
     audio.play();
 })
 const clock = new THREE.Clock()
