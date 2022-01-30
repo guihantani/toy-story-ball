@@ -21,7 +21,8 @@ scene.background = new THREE.Color('black')
 
 function addSphere(scene) {
   let geometry = new THREE.SphereGeometry( 0.3, 32, 32 );
-  let material = new THREE.MeshStandardMaterial({color: 0x0000ff, roughness: 0});
+  const texture = new THREE.TextureLoader().load( 'nathanyaahla-yasharahla-luxo-jr-ball-uv4-5-300x.jpg' );
+  const material = new THREE.MeshStandardMaterial({map:texture, roughness: 0});
   let sphere = new THREE.Mesh( geometry, material );
   sphere.position.set(-0.2, 3, -4.0);
   sphere.name = 'my-sphere';
